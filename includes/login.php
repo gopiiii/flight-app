@@ -7,11 +7,16 @@ Flight::route('POST /login', function(){
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    $db = Flight::db();
+    $db->where('username', $username);
+    $db->where('password', md5( $password ) );
+    $users = $db->get('users');
+
     // cek di database dan login / redirect kalo ga terdaftar
-    $exist = $username == 'user';
+    $exist = !empty($users);
     if ( $exist ) {
     	// logged in
-    	$_SESSION['user'] = 'user';
+    	$_SESSION['user'] = $users[0]['username'];
     	Flight::redirect( '/' );
     } else {
     	// kembalikan ke hlaman login
